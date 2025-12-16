@@ -8,8 +8,8 @@ from datetime import datetime, time
 # ---------------------------------------------------------
 # 1. ตั้งค่าหน้า Web App
 # ---------------------------------------------------------
-st.set_page_config(page_title="ED Anode Current Analyzer", layout="wide")
-st.title("⚡ED Anode Current Analyzer")
+st.set_page_config(page_title="Anode Current Monitor v1.0", layout="wide")
+st.title("Anode Current Monitor v.1.0 [Updated 16/12/25]")
 
 # ---------------------------------------------------------
 # 2. ฟังก์ชันโหลดและรวมข้อมูล 
@@ -152,34 +152,12 @@ def reset_date_filter():
 
     
 with st.sidebar:
-    st.header("📂 Import CSV file")
+    st.header("📂 Import .CSV file")
     uploaded_files = st.file_uploader("Mutiple files are acceptable",
         type=['csv'], 
         accept_multiple_files=True
     )
     
-    # --- 3. เพิ่มปุ่มควบคุมรูปภาพ ---
-    st.divider()
-    st.header("Bath Layout")
-    
-    button_label = "ซ่อน Anode Diagram" if st.session_state.show_diagram else "แสดง Anode Diagram"
-    st.button(
-        button_label, 
-        on_click=toggle_diagram, 
-        width='stretch'
-    )
-    
-    # --- 4. แสดงรูปภาพเมื่อสถานะเป็น True ---
-    if st.session_state.show_diagram:
-        try:
-            # ใช้ Anode_Layout.jpg ตามที่ผู้ใช้ระบุ
-            st.image(
-                'Anode_Layout.jpg', 
-                caption="Layout", 
-                width='stretch' 
-            )
-        except FileNotFoundError:
-            st.warning("⚠️ ไม่พบไฟล์โปรดอัปโหลดหรือเปลี่ยนชื่อไฟล์")
     
     st.divider()
 
@@ -225,9 +203,8 @@ with st.sidebar:
             chart_type_options = [
                 "Line (เส้นปกติ)", 
                 "Line + Markers (เส้น+จุด)", 
-                "Bar (แท่ง)", 
+                "Bar (แท่ง)",
                 "Area (พื้นที่)", 
-                "Scatter (จุดกระจาย)"
             ]
             # *** เพิ่ม key ***
             selected_chart_type = st.selectbox("เลือกรูปแบบ:", chart_type_options, index=0, key='chart_type_selector') 
@@ -256,12 +233,12 @@ with st.sidebar:
             st.subheader("4. เลือกข้อมูล (Modules)")
             
             # กำหนดค่า default ที่ดีกว่า: เลือก L1 และ R1 ถ้ามี
-            default_selection = [c for c in ['L1', 'R1'] if c in selectable_cols]
+            #default_selection = [c for c in ['L1', 'R1'] if c in selectable_cols]
             
             selected_non_total_cols = st.multiselect(
                 "ตัวแปรที่ต้องการพลอต:",
                 options=selectable_cols,
-                default=default_selection if default_selection else selectable_cols[0:1]
+                #default=default_selection if default_selection else selectable_cols[0:1]
             )
 
             # 3.3 Date/Time Picker
@@ -300,6 +277,29 @@ with st.sidebar:
     else:
         st.info("Please upload CSV files.")
         st.stop()
+        
+    # --- 3. เพิ่มปุ่มควบคุมรูปภาพ ---
+    st.divider()
+    st.header("Bath Layout")
+    
+    button_label = "ซ่อน Anode Diagram" if st.session_state.show_diagram else "แสดง Anode Diagram"
+    st.button(
+        button_label, 
+        on_click=toggle_diagram, 
+        width='stretch'
+    )
+    
+    # --- 4. แสดงรูปภาพเมื่อสถานะเป็น True ---
+    if st.session_state.show_diagram:
+        try:
+            # ใช้ Anode_Layout.jpg ตามที่ผู้ใช้ระบุ
+            st.image(
+                'Anode_Layout.jpg', 
+                caption="Layout", 
+                width='stretch' 
+            )
+        except FileNotFoundError:
+            st.warning("⚠️ ไม่พบไฟล์")
 
 
 # ---------------------------------------------------------
@@ -311,7 +311,7 @@ if uploaded_files and df is not None and not df.empty:
     filtered_raw_df = df.loc[mask]
 
     if filtered_raw_df.empty:
-        st.warning("⚠️ ไม่พบข้อมูลในช่วงเวลาที่เลือก โปรดปรับช่วงเวลาใหม่")
+        st.warning("⚠️ ไม่พบข้อมูลในช่วงเวลาที่เลือก")
         st.stop()
     
     # รวมคอลัมน์ที่จะใช้พลอตทั้งหมด
@@ -339,11 +339,11 @@ if uploaded_files and df is not None and not df.empty:
         x_axis_format = dict(tickformat="%d/%m %H:%M")
 
     # *********************************************************
-    # ******* NEW LAYOUT STEP 1: Fixed Total Summary ******
+    # ******* NEW LAYOUT STEP 1: Overall Summary Table ******
     # *********************************************************
     
     if FIXED_TOTAL_COLS:
-        st.subheader("Fixed Total Summary") 
+        st.subheader("Overall Summary Table") 
         
         # จัดเรียงคอลัมน์ Fixed ใหม่
         total_rec_cols = [col for col in FIXED_TOTAL_COLS if 'REC' in col or col == 'Total']
@@ -381,7 +381,7 @@ if uploaded_files and df is not None and not df.empty:
         # ใช้ st.columns เพื่อจัด subheader
         col_h1, col_h2 = st.columns([0.7, 0.3])
         with col_h1:
-            col_h1.subheader("📊 Fixed Total Analysis (Grouped Trends)")
+            col_h1.subheader("Overall Summary")
         
         # --- 1. กำหนดกลุ่มใหม่ (ใช้ซ้ำ) ---
         group1_cols = [col for col in ['Total', 'Total REC.1', 'Total REC.2'] if col in FIXED_TOTAL_COLS]
@@ -446,7 +446,7 @@ if uploaded_files and df is not None and not df.empty:
                 **x_axis_format
             ),
             showlegend=True, 
-            title="Fixed Total Analysis (Grouped Trends)"
+            title=""
         )
         
         st.plotly_chart(fig_total, width='stretch')
@@ -496,7 +496,7 @@ if uploaded_files and df is not None and not df.empty:
                     delta_color="off"
                 )
     else:
-        st.info("👈 ไม่ได้เลือก Module สำหรับสรุป Total Charge และ Min/Max")
+        st.info("👈 ไม่ได้เลือก Modules ย่อย")
     
     st.divider()
 
