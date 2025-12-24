@@ -87,7 +87,14 @@ def load_and_combine_data(uploaded_files):
 def calculate_auc(df, col_name):
     y = df[col_name].values
     x_seconds = (df.index - df.index[0]).total_seconds()
-    area_coulombs = np.trapz(y, x_seconds)
+    
+    # --- แก้ไขส่วนนี้ (Support NumPy 2.0+) ---
+    if hasattr(np, 'trapezoid'):
+        area_coulombs = np.trapezoid(y, x_seconds)
+    else:
+        area_coulombs = np.trapz(y, x_seconds)
+    # -------------------------------------
+
     area_amp_hours = area_coulombs / 3600
     
     # คำนวณค่าเฉลี่ย
