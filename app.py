@@ -8,8 +8,8 @@ from datetime import datetime, time
 # ---------------------------------------------------------
 # 1. ตั้งค่าหน้า Web App
 # ---------------------------------------------------------
-st.set_page_config(page_title="Anode Current Monitor v1.0", layout="wide")
-st.title("Anode Current Monitor v.1.0 [Updated 24/12/25]")
+st.set_page_config(page_title="Anode Current Monitor v1.1", layout="wide")
+st.title("Anode Current Monitor v.1.1 [Updated 24/12/25]")
 
 # ---------------------------------------------------------
 # 2. ฟังก์ชันโหลดและรวมข้อมูล 
