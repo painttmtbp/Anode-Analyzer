@@ -41,6 +41,13 @@ def load_and_combine_data(uploaded_files):
     combined_df.dropna(subset=['Timestamp'], inplace=True)
     combined_df.sort_values(by='Timestamp', inplace=True)
     
+    # -----------------------------------------------------------
+    # ลดขนาดข้อมูล
+    # -----------------------------------------------------------
+    numeric_cols = combined_df.select_dtypes(include=['float64']).columns
+    combined_df[numeric_cols] = combined_df[numeric_cols].astype('float32')
+    # -----------------------------------------------------------
+    
     # --- เริ่มต้น: การคำนวณคอลัมน์ใหม่ ---
     
     # 1. Bare Anode B7 (REC.1) - ใช้ค่า B7 โดยตรง
@@ -88,7 +95,7 @@ def calculate_auc(df, col_name):
     y = df[col_name].values
     x_seconds = (df.index - df.index[0]).total_seconds()
     
-    # --- แก้ไขส่วนนี้ (Support NumPy 2.0+) ---
+    # --- แก้ไข(Support NumPy 2.0+) ---
     if hasattr(np, 'trapezoid'):
         area_coulombs = np.trapezoid(y, x_seconds)
     else:
@@ -154,10 +161,7 @@ def reset_date_filter():
         del st.session_state.timeframe_selector
     if 'chart_type_selector' in st.session_state:
         del st.session_state.chart_type_selector
-    
-    # NOTE: ไม่ต้องมี st.rerun() ที่นี่ เพราะการเปลี่ยน st.session_state จะสั่ง rerun โดยอัตโนมัติ
 
-    
 with st.sidebar:
     st.header("📂 Import .CSV file")
     uploaded_files = st.file_uploader("Mutiple files are acceptable",
@@ -220,7 +224,7 @@ with st.sidebar:
             st.subheader("3. ความละเอียดเวลา")
             interval_options = {
                 "5s (Default)": None,
-                "10s (avg)": "10S", # เอาข้อมูล 5วิ 2 จุดมาเฉลี่ย
+                "10s (avg)": "10S",
                 "30s (avg)": "30S",
                 "1 hr (avg)": "1H",
                 "1 day (avg)": "1D",
