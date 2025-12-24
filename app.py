@@ -9,7 +9,7 @@ from datetime import datetime, time
 # 1. ตั้งค่าหน้า Web App
 # ---------------------------------------------------------
 st.set_page_config(page_title="Anode Current Monitor v1.0", layout="wide")
-st.title("Anode Current Monitor v.1.0 [Updated 16/12/25]")
+st.title("Anode Current Monitor v.1.0 [Updated 24/12/25]")
 
 # ---------------------------------------------------------
 # 2. ฟังก์ชันโหลดและรวมข้อมูล 
@@ -212,13 +212,14 @@ with st.sidebar:
             # 3.1 เลือก Timeframe
             st.subheader("3. ความละเอียดเวลา")
             interval_options = {
-                "5s (Original)": None,  
-                "1 min": "1T",
-                "1 hr": "1H",
-                "1 day": "1D",
-                "1 week": "1W",
-                "1 month": "1MS",       
-                "1 year": "1YS"         
+                "5s (Default)": None,
+                "10s (avg)": "10S", # เอาข้อมูล 5วิ 2 จุดมาเฉลี่ย
+                "30s (avg)": "30S",
+                "1 hr (avg)": "1H",
+                "1 day (avg)": "1D",
+                "1 week (avg)": "1W",
+                "1 month (avg)": "1MS",
+                "1s (Special)": "1S"
             }
             # *** เพิ่ม key ***
             selected_interval_label = st.selectbox(
